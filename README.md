@@ -13,3 +13,11 @@ Ini adalah URI (Uniform Resource Identifier) koneksi yang memberi tahu aplikasi 
     - localhost: Menandakan bahwa message broker (misalnya RabbitMQ) berjalan di komputer lokal yang sama persis dengan tempat aplikasi Rust yang dijalankan.
 
     - 5672: Ini adalah nomor port jaringan standar bawaan yang digunakan oleh server AMQP untuk menerima koneksi masuk (koneksi standar/TCP tanpa enkripsi).
+
+## Simulation Slow Subscriber
+
+![/slow-RabbitMQ](./assets/slow-subscriber.jpg)
+
+Pada simulasi saya, jumlah pesan maksimum yang menumpuk di dalam queue adalah 10 pesan. Meskipun saya menjalankan program publisher sebanyak 7 kali secara berturut-turut (total 35 pesan), antrean tidak menumpuk hingga angka maksimal tersebut karena subscriber tetap aktif memproses pesan di latar belakang.
+
+Angka 10 ini mencerminkan selisih kecepatan antara pengiriman pesan yang instan oleh publisher dan pemrosesan pesan oleh subscriber yang memiliki jeda waktu (thread::sleep). RabbitMQ menyimpan pesan-pesan yang belum sempat diproses ke dalam antrean agar tidak hilang. Begitu aktivitas pengiriman dari publisher berhenti, subscriber segera menghabiskan sisa antrean hingga kembali ke angka 0, yang ditandai dengan penurunan tajam pada grafik Queued Messages di akhir.
